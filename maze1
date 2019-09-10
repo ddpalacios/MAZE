@@ -1,0 +1,37 @@
+#include <stdio.h>
+
+
+
+
+
+int main() {
+    FILE *fp;
+    char* filename = "maze.txt";
+    char c;
+    char col[100];
+    int length;
+    int Rowcount =1;
+    
+    fp = fopen(filename, "r");
+    if (fp == NULL){
+        printf("Could not open file %s",filename);
+        return 1;
+    }
+    fscanf(fp,"%[^\n]", col);
+    length = strlen(col) - 1;
+    
+  
+        for (c = getc(fp); c != EOF; c = getc(fp)) 
+            if (c == '\n') // Increment count if this character is newline 
+                Rowcount = Rowcount + 1; 
+  
+    // Close the file 
+    fclose(fp); 
+    printf("Number of Rows: %d\n", Rowcount); 
+    printf("Number of Columns: %d", length);
+        
+
+
+    return 0;
+}
+
