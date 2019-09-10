@@ -1,14 +1,28 @@
 #include <stdio.h>
 
+void *malloc();
 
+
+int * allocate_1D(int n){
+    return 0;
+}
+
+
+int ** allocate_2D(int r, int c){
+    
+    int **a = (int **) malloc(r * sizeof(int **));
+    for (int row=0; row < r; row++){
+        a[row] = allocate_1D(c);
+    }
+    
+}
 
 
 
 int main() {
     FILE *fp;
     char* filename = "maze.txt";
-    char c;
-    char col[100];
+    char c,col[100], fileContents;
     int length;
     int Rowcount =1;
     
@@ -17,21 +31,28 @@ int main() {
         printf("Could not open file %s",filename);
         return 1;
     }
-    fscanf(fp,"%[^\n]", col);
-    length = strlen(col) - 1;
     
-  
-        for (c = getc(fp); c != EOF; c = getc(fp)) 
-            if (c == '\n') // Increment count if this character is newline 
-                Rowcount = Rowcount + 1; 
-  
+    
+    fscanf(fp,"%[^\n]", col);
+    length = strlen(col) - 1; //get total col count
+    
+    for (c = getc(fp); c != EOF; c = getc(fp)) {
+        if (c == '\n'){ // Increment count if this character is newline 
+            Rowcount = Rowcount + 1; 
+        }
+}
+
     // Close the file 
     fclose(fp); 
-    printf("Number of Rows: %d\n", Rowcount); 
+    printf("\nNumber of Rows: %d\n", Rowcount); 
     printf("Number of Columns: %d", length);
         
 
 
     return 0;
 }
+
+
+
+
 
