@@ -1,64 +1,112 @@
 #include <stdio.h>
 
-void *malloc();
+
+int loadFile(char* filename);
+int getRowCount(FILE* fp);
+int getColCount(FILE* fp);
+void CreateGrid(FILE* fp, int rowCount, int colNum);
 
 
-int * allocate_1D(int n){
-    return 0;
+
+int main(void) {
+loadFile("maze.txt");
+
+
+
+
+
+    
+
+return 0;
+
+
+    
 }
 
 
-int ** allocate_2D(int r, int c){
-    
-    int **a = (int **) malloc(r * sizeof(int **));
-    for (int row=0; row < r; row++){
-        a[row] = allocate_1D(c);
-    }
-    
-}
 
 
 
-int main() {
-    FILE *fp;
-    char* filename = "maze.txt";
-    char c,col[100], fileContents;
-    int length;
-    int Rowcount =1;
-    
-    fp = fopen(filename, "r");
-    if (fp == NULL){
+int loadFile(char* filename)
+{
+     
+     FILE *fp;
+     fp = fopen(filename, "r");
+      if (fp == NULL){
         printf("Could not open file %s",filename);
-        return 1;
+        return 0;
+    }
+    else{
+        printf("FILE LOADED...\n\n");
+        int colNum = getColCount(fp);
+        int rowCount = getRowCount(fp);
+        fclose(fp); //close file
+        fp = fopen(filename, "r");   //reopen
+        CreateGrid(fp, rowCount, colNum);
+        
+       
+        
+        
+        
+        return 0;
+        
     }
     
     
-    fscanf(fp,"%[^\n]", col);
-    length = strlen(col) - 1; //get total col count
     
-    for (c = getc(fp); c != EOF; c = getc(fp)) {
+    
+}
+
+
+
+
+int getColCount(FILE* fp)
+{
+    char col[100];
+  
+     int colNum;
+     
+    
+        fscanf(fp,"%[^\n]", col);
+        colNum = strlen(col) - 1; //get total col count
+        
+        // printf("%d", colNum);
+return colNum;    
+    
+}
+
+int getRowCount(FILE* fp)
+{
+     char c;
+     int Rowcount =1;
+     
+     for (c = getc(fp); c != EOF; c = getc(fp)) {
         if (c == '\n'){ // Increment count if this character is newline 
             Rowcount = Rowcount + 1; 
         }
 }
-
-    // Close the file 
-    
-    printf("\nNumber of Rows: %d\n", Rowcount); 
-    printf("Number of Columns: %d", length);
-    char **maze  = (char **)malloc(Rowcount*sizeof(char*));
-    for (int i =0; i< Rowcount; i++){
-        maze[i]= (char*)malloc(length+1 * sizeof(char));
-    }
+return Rowcount;
     
     
-        fclose(fp); 
-
-
-    return 0;
 }
 
-
-
-
+void CreateGrid(FILE* fp, int rowCount, int colNum)
+{
+    
+     int dimensions[rowCount][colNum];
+        
+        for (int i = 0; i < rowCount; i++) {
+             for (int j = 0; j < colNum; j++) {
+                    dimensions[i][j] = getc(fp);
+                    printf("%c", dimensions[i][j]);
+        }
+     
+    }
+    printf("\n\nRow: %d Col: %d", rowCount, colNum);
+ 
+      
+        
+    
+    
+}
 
