@@ -91,7 +91,6 @@ void CreateGrid(FILE* fp, int rowCount, int colNum)
                     char brick = getc(fp);
                    dimensions[i][j] = brick;
                    if (brick == 's'){
-                       dimensions[i][j] = 's';
                        startPos[0] = i+1;
                        startPos[1] = j+1;
 
