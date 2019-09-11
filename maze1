@@ -11,12 +11,6 @@ void CreateGrid(FILE* fp, int rowCount, int colNum);
 int main(void) {
 loadFile("maze.txt");
 
-
-
-
-
-    
-
 return 0;
 
 
@@ -56,21 +50,15 @@ int loadFile(char* filename)
     
     
 }
-
-
-
-
 int getColCount(FILE* fp)
 {
-    char col[100];
-  
+    char col[200];
      int colNum;
      
-    
-        fscanf(fp,"%[^\n]", col);
-        colNum = strlen(col) - 1; //get total col count
-        
-        // printf("%d", colNum);
+    fscanf(fp,"%[^\n]", col);
+    colNum = strlen(col) +1; //get total col count
+       
+       
 return colNum;    
     
 }
@@ -92,20 +80,37 @@ return Rowcount;
 
 void CreateGrid(FILE* fp, int rowCount, int colNum)
 {
-    
+    int i, j;
+    int startPos[2];
+   
+     
      int dimensions[rowCount][colNum];
         
-        for (int i = 0; i < rowCount; i++) {
-             for (int j = 0; j < colNum; j++) {
-                    dimensions[i][j] = getc(fp);
+        for (i = 0; i < rowCount; i++) {
+             for (j = 0; j < colNum; j++) {
+                    char brick = getc(fp);
+                   dimensions[i][j] = brick;
+                   if (brick == 's'){
+                       dimensions[i][j] = 's';
+                       startPos[0] = i+1;
+                       startPos[1] = j+1;
+
+                   }
                     printf("%c", dimensions[i][j]);
         }
-     
+        
+        
+      
     }
-    printf("\n\nRow: %d Col: %d", rowCount, colNum);
+    printf("\nStarting point at Row: %d Col: %d", startPos[0], startPos[1]);
+   
+    
+    
+
+   
  
       
-        
+       
     
     
 }
