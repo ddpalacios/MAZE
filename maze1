@@ -1,24 +1,32 @@
 #include <stdio.h>
+#include <string.h>
 #define SIZE 1000
 
 int loadFile(char* filename);
 int getRowCount(FILE* fp);
 int getColCount(FILE* fp);
-void CreateGrid(FILE* fp, int rowCount, int colNum);
+void CreateGrid(char* filename,FILE* fp, int rowCount, int colNum);
 void enQueue(int);
 void deQueue();
 void display();
-void solve(int xstart, int ystart);
+void solve(FILE* fp,int xstart, int ystart, int colNum, int rowCount);
 int items[SIZE], front = -1, rear = -1;
-
+struct node {
+        int data;
+        struct node *next;
+    } *head, *temp, *curr, *left;
 
 
 int main(void) {
     
 loadFile("maze.txt");
 
+
+
 return 0;
 }
+
+
 
 int loadFile(char* filename)
 {
@@ -35,7 +43,7 @@ int loadFile(char* filename)
         int rowCount = getRowCount(fp);
         fclose(fp); //close file
         fp = fopen(filename, "r");   //reopen
-        CreateGrid(fp, rowCount, colNum);
+        CreateGrid(filename,fp, rowCount, colNum);
         
        
         
@@ -75,7 +83,7 @@ return Rowcount;
     
     
 }
-void CreateGrid(FILE* fp, int rowCount, int colNum)
+void CreateGrid(char* filename, FILE* fp, int rowCount, int colNum)
 {
     int i, j;
     int startPos[2];
@@ -84,9 +92,12 @@ void CreateGrid(FILE* fp, int rowCount, int colNum)
      int dimensions[rowCount][colNum];
         
         for (i = 0; i < rowCount; i++) {
+           
              for (j = 0; j < colNum; j++) {
                     char brick = getc(fp);
                    dimensions[i][j] = brick;
+                   
+                   
                    if (brick == 's'){
                       
                        startPos[0] = i;
@@ -97,26 +108,149 @@ void CreateGrid(FILE* fp, int rowCount, int colNum)
         }
         
         
+        
       
     }
-    solve(startPos[0], startPos[1]);
+    fclose(fp); //close file
+    fp = fopen(filename, "r");   //reopen
+   solve(fp, startPos[0], startPos[1], colNum, rowCount);
     
 
 }
 
 
 
-void solve(int xstart, int ystart)
+void solve(FILE* fp,int xstart, int ystart, int colNum, int rowCount)
 {
-    printf("\nStarting point at Row: %d Col: %d", xstart, ystart);
+    
+     int i, j;
+  for (i = 0; i < rowCount; i++) {
+            deleteAll();
+           
+             for (j = 0; j < colNum; j++) {
+                 char graphNode = getc(fp);
+               
+                 if (graphNode == ' '){
+                     add(NULL); //null value set to zero
+                     append(j); //appends front of Linked List
+                     delete(0); //removes null 0 value
+                     
+                 }
+                 
     
     
+             }
+            printf("\nRow [%d] -> ", i);
+            disp(); //displays linked list
+      
+  }
     
 }
 
 
 
 
+
+
+
+//Linked List implementation
+void add(int num) {
+        int i=0;
+        temp = (struct node *) malloc(sizeof(struct node));
+        temp->data = num;
+ 
+            if(head == NULL) {
+                head = temp;
+                head->next = NULL;
+            }
+            else
+            {
+                temp->next = head;                
+                head = temp;
+            }
+ 
+    }
+void append(int data) {
+ 
+        temp = (struct node *) malloc(sizeof(struct node));
+        temp->data = data;
+        curr = head;
+ 
+        if(curr == NULL) {
+            head = temp; 
+            head->next = NULL;
+        }
+         
+        while(curr->next != NULL) {
+            curr = curr->next;
+        }
+        curr->next = temp;
+        curr = temp;
+        curr->next = NULL;
+    }
+void delete(int num) {
+        curr = head;
+ 
+        if(curr == NULL) {
+            printf("Link List is empty");
+        }
+        else
+        {
+            while(curr != NULL) {
+                
+                if(curr->data == num) {
+ 
+                    if(curr == head) {
+                    head = curr->next;
+                    free(curr);
+                    break;
+                }
+                    left->next = curr->next;
+                    free(curr);
+                    break;
+                }
+                else {
+                    left = curr;
+                    curr = curr->next;
+                }
+            } //while loop
+        }
+    }
+void disp() {
+        if(head == NULL) {
+            printf("Link list is empty");
+            return;
+        }
+        else { 
+            curr = head;
+                
+                while(curr != NULL) {
+                    printf("%d ->  ",curr->data);
+                    curr = curr->next;
+                } //while
+            }//else
+        }
+ void deleteAll() {
+        curr = head;
+        if(curr == NULL) {
+          //  printf("Link list is empty");
+        }
+        else {
+            while(curr != NULL) {
+                left = curr->next;
+                free(curr);
+                curr = left;
+            }
+            head = NULL;
+           // printf("Deleted Link list");
+        }
+    }
+
+
+
+
+
+//Queue implementation
 
 void enQueue(int value)
 {
