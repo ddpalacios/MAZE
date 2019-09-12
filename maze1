@@ -1,25 +1,24 @@
 #include <stdio.h>
-
+#define SIZE 1000
 
 int loadFile(char* filename);
 int getRowCount(FILE* fp);
 int getColCount(FILE* fp);
 void CreateGrid(FILE* fp, int rowCount, int colNum);
+void enQueue(int);
+void deQueue();
+void display();
+void solve(int xstart, int ystart);
+int items[SIZE], front = -1, rear = -1;
 
 
 
 int main(void) {
+    
 loadFile("maze.txt");
 
 return 0;
-
-
-    
 }
-
-
-
-
 
 int loadFile(char* filename)
 {
@@ -62,7 +61,6 @@ int getColCount(FILE* fp)
 return colNum;    
     
 }
-
 int getRowCount(FILE* fp)
 {
      char c;
@@ -77,7 +75,6 @@ return Rowcount;
     
     
 }
-
 void CreateGrid(FILE* fp, int rowCount, int colNum)
 {
     int i, j;
@@ -91,8 +88,9 @@ void CreateGrid(FILE* fp, int rowCount, int colNum)
                     char brick = getc(fp);
                    dimensions[i][j] = brick;
                    if (brick == 's'){
-                       startPos[0] = i+1;
-                       startPos[1] = j+1;
+                      
+                       startPos[0] = i;
+                       startPos[1] = j;
 
                    }
                     printf("%c", dimensions[i][j]);
@@ -101,16 +99,55 @@ void CreateGrid(FILE* fp, int rowCount, int colNum)
         
       
     }
-    printf("\nStarting point at Row: %d Col: %d", startPos[0], startPos[1]);
-   
-    
+    solve(startPos[0], startPos[1]);
     
 
-   
- 
-      
-       
+}
+
+
+
+void solve(int xstart, int ystart)
+{
+    printf("\nStarting point at Row: %d Col: %d", xstart, ystart);
+    
     
     
 }
 
+
+
+
+
+void enQueue(int value)
+{
+   if(rear == SIZE-1)
+        printf("\nQueue is Full!!");
+    else {
+        if(front == -1)
+            front = 0;
+        rear++;
+        items[rear] = value;
+        printf("\nInserted -> %d", value);
+    }
+}
+void deQueue(){
+    if(front == -1)
+        printf("\nQueue is Empty!!");
+    else{
+        printf("\nDeleted : %d", items[front]);
+        front++;
+        if(front > rear)
+            front = rear = -1;
+    }
+}  
+
+void display(){
+    if(rear == -1)
+        printf("\nQueue is Empty!!!");
+    else{
+        int i;
+        printf("\nQueue elements are:\n");
+        for(i=front; i<=rear; i++)
+            printf("%d\t",items[i]);
+    }
+}
