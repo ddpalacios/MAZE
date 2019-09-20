@@ -155,7 +155,3 @@ fclose(fp);
 
  return 0;
 }
-int colNum = getColCount(fp);
-        int rowCount = getRowCount(fp);
-int colNum = getColCount(fp);
-        int rowCount = getRowCount(fp);
