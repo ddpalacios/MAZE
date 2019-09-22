@@ -1,15 +1,27 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-FILE* loadFile(char* filename);
-int getRowCount(FILE* fp);
-int getColCount(FILE* fp);
-char **inputMaze(FILE* fp, int rowCount, int colNum);
-int **outMaze(char** maze, FILE* fp, int rowCount, int colNum);
 
-FILE* loadFile(char* filename){
-     
-     FILE *fp;
+FILE* loadFile(char* filename);
+char **inputMaze(FILE* fp, int rowCount, int colNum);
+int **outputMaze(FILE *fp, int rowCount, int colNum, char **in_maze);
+int getRowCount(FILE *fp, char *filename);
+int getColCount(FILE *fp, char *filename);
+void Print_inMaze(int rows, int col, char **maze);
+void Print_outMaze(int rowCount,int colNum, int** out_maze);
+void solve_maze(int row, int column, char**in_maze, int** out_maze);
+int *get_start_cordinates(char** in_maze,int rows,int columns);
+void solve_by_recursion(int x_pos,int y_pos, int **maze_out, int distance,int rows,int columns);
+int isOpen(int testRow,int testCol,int row, int col);
+void go_left(int** maze_out, int x_pos, int y_pos, int distance, int rows, int columns);
+void go_right(int** maze_out, int x_pos, int y_pos, int distance, int rows, int columns);
+void step_up(int** maze_out,int x_pos, int y_pos, int distance, int rows, int columns);
+void step_down(int** maze_out, int x_pos, int y_pos, int distance, int rows, int columns);
+
+
+FILE* loadFile(char*filename){
+
+      FILE *fp;
      fp = fopen(filename, "r");
       if (fp == NULL){
         printf("Could not open file %s",filename);
@@ -25,111 +37,77 @@ FILE* loadFile(char* filename){
         return fp;
         
     }
-    
-    
-    
-    
+
 }
-int getColCount(FILE* fp){
-    char col[200];
-     int colNum;
-     
-    fscanf(fp,"%[^\n]", col);
-    colNum = strlen(col) +1; //get total col count
-       
-       
-return colNum;    
-    
+char** inputMaze(FILE *fp, int rows, int columns)
+{  
+  int i,j;
+  char **maze = (char**)malloc(rows*sizeof(char*));
+  for (i=0; i<rows; i++){
+     maze[i] = (char*)malloc(columns+1*sizeof(char));  
+  }
+
+
+  char brick;
+  for (int i=0; i<rows; i++)
+  {
+   for (int j=0; j<columns+1; j++)
+   {
+      brick = getc(fp);
+      maze[i][j] = brick;
+    }
+  }
+
+    Print_inMaze(rows, columns, maze);
+    return maze;
 }
-int getRowCount(FILE* fp){
-     char c;
-     int Rowcount =1;
-     
-     for (c = getc(fp); c != EOF; c = getc(fp)) {
-        if (c == '\n'){ // Increment count if this character is newline 
-            Rowcount = Rowcount + 1; 
+int **outputMaze(FILE *fp, int rowCount, int colNum, char**in_maze){
+      int brick;
+      int** out_maze =  (int**)malloc(rowCount*sizeof(int*));
+        for (int i=0; i<rowCount; i++){
+          out_maze[i] = (int*)malloc(colNum*sizeof(int));  
         }
-}
-return Rowcount;
+                for (int i=0; i < rowCount; i ++){
+                  for (int j=0; j<colNum; j++){
+                    if (in_maze[i][j] == ' ')
+                    out_maze[i][j] = -1;
+                    if (in_maze[i][j] == 'b')
+                    out_maze[i][j] = -2;
+                    else if (in_maze[i][j] == 's')
+                    out_maze[i][j] = -3;
+                  }
+
+                }     
+          return out_maze;
 
 }
-
-
-
-int **outMaze(char** maze, FILE * fp, int rowCount, int colNum){
-
-int **mazeOut = (int**)malloc(rowCount*sizeof(int*));
-for (int i=0; i<rowCount; i++){
-	mazeOut[i] = (int*)malloc(colNum+1*sizeof(int));
-
-
-}
-
-for (int i=0; i<rowCount; i++){
-	for(int j=0; j< colNum; j++){
-		if (maze[i][j] == "b"){
-		mazeOut[i][j] = -1;
-
-	}
-		if (maze[i][j] == "s"){
-    		mazeOut[i][j] = 0;
-
-
-}
-
-printf("%c", mazeOut[i][j]);
-
-}
-
-}
-return mazeOut;
-
-
-
-
-}
-
-
-
-
-char **inputMaze(FILE* fp, int rowCount, int colNum){
-
-
-
-char **maze = (char**)malloc(rowCount*sizeof(char*));
-for (int i=0; i<rowCount; i++){
-	maze[i] = (char*)malloc(colNum+1*sizeof(char));
-
-
-}
-	char brick;
-        for (int i = 0; i < rowCount; i++) {
-
-             for (int j = 0; j < colNum+1; j++) {
-                    brick = getc(fp);
-
-                     maze[i][j] = brick;
-
-
-
-}
+void Print_outMaze(int row, int col, int **out_maze){
+    printf("\n");
+    for (int i=0; i<row; i++)
+      {
+        for (int j=0; j<col; j++)
+        {
+            printf(" %d ",out_maze[i][j]);
+        }
+        printf("\n");
+      }  
+      
+    
     }
 
-for (int i=0; i<rowCount; i++){
-	for (int j=0; j<colNum; j++){
-		printf("%c", maze[i][j]);
-}
 
-printf("\n");
-}
-
-return maze;
-
-}
-
-
-
-
+void Print_inMaze(int row, int col, char ** maze){
+  for (int i=0; i<row; i++)
+    {
+      for (int j=0; j<col; j++)
+      {
+          printf(" %c ",maze[i][j]);
+      }
+      printf("\n");
+    }  
+    
+  
+  }
 
 
 
@@ -137,21 +115,138 @@ return maze;
 
 
 
-int main()
+
+
+int getRowCount(FILE *fp, char *filename)
 {
-char *c = "maze.txt";
-FILE *fp= loadFile(c);
+  fp = fopen(filename,"r");
+  int rowCount = 0;
+  char chr;
+  while (chr!=EOF)
+  {
+    if (chr=='\n')
+    {
+      rowCount = rowCount + 1;
+    }  
+    chr = getc(fp);
+  }
+  fclose(fp);
+  return rowCount;
+}
+int getColCount(FILE *fp, char *filename)
+{
+  fp = fopen(filename,"r");
+  int colCount = 0;
+  char chr;
+  while (chr!='\n')
+  {
+    colCount = colCount+1;
+    chr = fgetc(fp);  
+  }  
+  fclose(fp);
+  colCount = colCount-1;
+  return colCount;
+}
+int* get_start_cordinates(char** in_maze,int rows,int columns){
 
-int colNum = getColCount(fp);
-int rowCount = getRowCount(fp);
+ int starting_pos[2];
+  for (int i=0; i < rows; i++){
+    for (int j=0; j< columns; j++){
+      if (in_maze[i][j]== 's'){
+        starting_pos[0] = i;
+        starting_pos[1] = j;
 
-printf("%d, %d\n", rowCount, colNum);
+      }
 
-char **inMaze = inputMaze(fp,rowCount, colNum);
+    }
+  }
+ 
+    return starting_pos;
 
-//int **outmaze = outMaze(inMaze,fp, rowCount, colNum);
 
-fclose(fp);
+}
+int position_is_open(int testRow,int testCol,int row, int col)
+{
+  if (testRow<0 || testRow>=row)
+    return 0;
+  if (testCol<0 || testCol>=col)
+    return 0;
+  return 1;
+}
+void step_up(int** maze_out, int x_pos, int y_pos, int distance, int rows, int columns){
+   if (maze_out[x_pos-1][y_pos]==-1)
+       {
+         solve_by_recursion(x_pos-1,y_pos, maze_out, distance+1,rows,columns);
+       }
 
- return 0;
+}
+void step_down(int** maze_out, int x_pos, int y_pos, int distance, int rows, int columns){
+    if (maze_out[x_pos+1][y_pos]==-1)
+       {
+          solve_by_recursion(x_pos+1,y_pos,maze_out,distance+1,rows,columns);
+       }
+
+
+}
+void go_left(int** maze_out, int x_pos, int y_pos, int distance, int rows, int columns){
+ if (maze_out[x_pos][y_pos-1]==-1)
+       {
+         solve_by_recursion(x_pos,y_pos-1,maze_out,distance+1,rows,columns);
+       }
+
+
+}
+void go_right(int** maze_out, int x_pos, int y_pos, int distance, int rows, int columns){
+
+      if (maze_out[x_pos][y_pos+1]==-1)
+            {
+              solve_by_recursion(x_pos,y_pos+1,maze_out,distance+1,rows,columns);
+            }
+
+}
+void solve_by_recursion(int x_pos,int y_pos, int **maze_out, int distance,int rows,int columns){
+  int curr_body_pos = maze_out[x_pos][y_pos];
+  if (curr_body_pos == -3 || curr_body_pos == -1 ||curr_body_pos < distance){
+    maze_out[x_pos][y_pos] = distance;
+  }
+
+
+   if (position_is_open(x_pos -1,y_pos,rows,columns))
+       step_up(maze_out, x_pos, y_pos, distance,rows, columns);
+
+   if (position_is_open(x_pos+ 1,y_pos,rows,columns))
+       step_down(maze_out, x_pos, y_pos,distance, rows, columns);
+
+   if (position_is_open(x_pos,y_pos+1,rows,columns))
+       go_right(maze_out, x_pos, y_pos, distance,rows, columns);
+   
+   if (position_is_open(x_pos,y_pos-1,rows,columns))
+      go_left(maze_out, x_pos, y_pos,distance, rows, columns);
+}     
+void solve_maze(int rows, int columns, char** maze_in, int** maze_out)
+{
+    int* starting_pos = get_start_cordinates(maze_in, rows, columns);
+    int x_pos = starting_pos[0];
+    int y_pos = starting_pos[1];
+
+    solve_by_recursion(x_pos, y_pos, maze_out, 0,rows,columns);
+    Print_outMaze(rows,columns, maze_out);
+    printf("\nx: %d, y: %d", x_pos, y_pos);
+
+
+
+}
+int main(){
+
+  char* filename = "maze.txt";
+  FILE* fp = loadFile(filename);
+  int rows = getRowCount(fp,filename);
+  int columns = getColCount(fp,filename);
+  char** in_maze = inputMaze(fp,rows,columns);
+  int** out_maze = outputMaze(fp,rows,columns, in_maze);
+  solve_maze(rows,columns, in_maze,out_maze); 
+  
+ 
+
+  return 0;
 }
