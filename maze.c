@@ -17,7 +17,8 @@ void go_left(int** maze_out, int x_pos, int y_pos, int distance, int rows, int c
 void go_right(int** maze_out, int x_pos, int y_pos, int distance, int rows, int columns);
 void step_up(int** maze_out,int x_pos, int y_pos, int distance, int rows, int columns);
 void step_down(int** maze_out, int x_pos, int y_pos, int distance, int rows, int columns);
-
+void test();
+void complete_maze_solver(FILE* fp, char* filename);
 
 FILE* loadFile(char*filename){
 
@@ -210,7 +211,6 @@ void solve_by_recursion(int x_pos,int y_pos, int **maze_out, int distance,int ro
     maze_out[x_pos][y_pos] = distance;
   }
 
-
    if (position_is_open(x_pos -1,y_pos,rows,columns))
        step_up(maze_out, x_pos, y_pos, distance,rows, columns);
 
@@ -223,6 +223,9 @@ void solve_by_recursion(int x_pos,int y_pos, int **maze_out, int distance,int ro
    if (position_is_open(x_pos,y_pos-1,rows,columns))
       go_left(maze_out, x_pos, y_pos,distance, rows, columns);
 }     
+
+
+
 void solve_maze(int rows, int columns, char** maze_in, int** maze_out)
 {
     int* starting_pos = get_start_cordinates(maze_in, rows, columns);
@@ -236,17 +239,63 @@ void solve_maze(int rows, int columns, char** maze_in, int** maze_out)
 
 
 }
-int main(){
 
+
+void complete_maze_solver(FILE* fp, char* filename){
+
+        printf("\n\nSuccess!\nWriting in --> %s\nMemory Address--> %d\n\n\n",filename,fp);
+        fputs("\nTESTING FPUTS\n",fp);
+//      int rows = getRowCount(fp,filename);
+//        int columns = getColCount(fp,filename);
+//        char** in_maze = inputMaze(fp,rows,columns);
+//        int** out_maze = outputMaze(fp,rows,columns, in_maze);
+//        solve_maze(rows,columns, in_maze,out_maze);
+
+}
+
+
+
+void test(){
+        printf("\nHello, Daniel!\n");
+}
+
+
+
+int main(int argc, char **argv){
+  int chosen_flag;
   char* filename = "maze.txt";
-  FILE* fp = loadFile(filename);
-  int rows = getRowCount(fp,filename);
-  int columns = getColCount(fp,filename);
-  char** in_maze = inputMaze(fp,rows,columns);
-  int** out_maze = outputMaze(fp,rows,columns, in_maze);
-  solve_maze(rows,columns, in_maze,out_maze); 
-  
- 
+  FILE *fp = NULL;
+  //FILE* fp = loadFile(filename);
+  char* journal_filename;
+  FILE* journal_fp = NULL; //Just for testing on linux Nvidia
+
+        while((chosen_flag = getopt(argc,argv,"o:j"))!=-1)
+        {
+                switch (chosen_flag){
+                        case 'o':
+                        /*
+                        -o takes char parameter as filename to update journal usage
+                        journal_fp --> where you would write journal usage in
+                        -j loads journal from previous run and replays changes in maze
+                        */
+                                journal_filename = optarg;
+                                journal_fp = fopen(journal_filename, "a+");
+                                break;
+                        case 'j':
+                                printf("\nREPLAYS MAZE UPDATES\n");
+                        }
+
+        }
+        if (journal_fp != NULL){
+        complete_maze_solver(journal_fp, journal_filename);
+
+        }
+        else{
+        printf("\nNo journal usage\n");
+        complete_maze_solver(fp, filename);
+        }
+
 
   return 0;
 }
+
