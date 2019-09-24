@@ -18,7 +18,7 @@ void go_right(int** maze_out, int x_pos, int y_pos, int distance, int rows, int 
 void step_up(int** maze_out,int x_pos, int y_pos, int distance, int rows, int columns);
 void step_down(int** maze_out, int x_pos, int y_pos, int distance, int rows, int columns);
 void test();
-void complete_maze_solver(FILE* fp, char* filename);
+void complete_maze_solver(FILE* fp, FILE* journal_fp,char* filename);
 
 FILE* loadFile(char*filename){
 
